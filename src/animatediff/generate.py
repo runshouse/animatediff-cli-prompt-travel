@@ -1419,7 +1419,7 @@ def save_frames(video: Tensor, frames_dir: PathLike, **kwargs):
 
     for idx, frame in enumerate(tqdm(frames, desc=f"Saving frames to {frames_dir.stem}")):
         new_index = highest_index + 1 + idx
-        frame_path = frames_dir.joinpath(f"{new_index:03d}.png")
+        frame_path = frames_dir.joinpath(f"{new_index:04d}.png")
         save_image(frame, frame_path)
 
         
