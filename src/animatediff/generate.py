@@ -53,6 +53,23 @@ from animatediff.utils.util import (get_resized_image, get_resized_image2,
                                     prepare_lllite, prepare_motion_module,
                                     save_frames, save_imgs, save_video)
 
+
+def save_frames(frames, frame_dir, show_progress=True):
+    frame_dir.mkdir(parents=True, exist_ok=True)
+    for i, frame in enumerate(tqdm(frames, disable=not show_progress, desc="Saving frames")):
+        base_filename = f"{i:08d}.png"
+        save_path = frame_dir / base_filename
+
+        # Check if file exists and append a number to it
+        counter = 1
+        while os.path.exists(save_path):
+            base_filename = f"{i:08d}({counter}).png"
+            save_path = frame_dir / base_filename
+            counter += 1
+
+        frame.save(save_path)
+
+
 controlnet_address_table={
     "controlnet_tile" : ['lllyasviel/control_v11f1e_sd15_tile'],
     "controlnet_lineart_anime" : ['lllyasviel/control_v11p_sd15s2_lineart_anime'],
@@ -1495,7 +1512,8 @@ def run_inference(
     prompt_map = region_condi_list[0]["prompt_map"]
     prompt_tags = [re_clean_prompt.sub("", tag).strip().replace(" ", "-") for tag in prompt_map[list(prompt_map.keys())[0]].split(",")]
     prompt_str = "_".join((prompt_tags[:6]))[:50]
-    frame_dir = out_dir.joinpath(f"{idx:02d}-{seed}")
+    # frame_dir = out_dir.joinpath(f"{idx:02d}-{seed}")
+    frame_dir = "output"
     out_file = out_dir.joinpath(f"{idx:02d}_{seed}_{prompt_str}")
 
     def preview_callback(i: int, video: torch.Tensor, save_fn: Callable[[torch.Tensor], None], out_file: str) -> None:
