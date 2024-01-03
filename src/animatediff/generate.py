@@ -54,8 +54,14 @@ from animatediff.utils.util import (get_resized_image, get_resized_image2,
                                     save_frames, save_imgs, save_video)
 
 
+from pathlib import Path
+import os
+from tqdm import tqdm
+
 def save_frames(frames, frame_dir, show_progress=True):
+    frame_dir = Path(frame_dir)  # Convert to Path object if not already
     frame_dir.mkdir(parents=True, exist_ok=True)
+
     for i, frame in enumerate(tqdm(frames, disable=not show_progress, desc="Saving frames")):
         base_filename = f"{i:08d}.png"
         save_path = frame_dir / base_filename
@@ -68,6 +74,7 @@ def save_frames(frames, frame_dir, show_progress=True):
             counter += 1
 
         frame.save(save_path)
+
 
 
 controlnet_address_table={
