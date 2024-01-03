@@ -53,28 +53,6 @@ from animatediff.utils.util import (get_resized_image, get_resized_image2,
                                     prepare_lllite, prepare_motion_module,
                                     save_frames, save_imgs, save_video)
 
-from torch import Tensor
-
-def save_frames(video: Tensor, frames_dir: PathLike, show_progress: bool = True):
-    frames_dir = Path(frames_dir)
-    frames_dir.mkdir(parents=True, exist_ok=True)
-    frames = rearrange(video, "b c t h w -> t b c h w")
-    if show_progress:
-        for idx, frame in enumerate(tqdm(frames, desc=f"Saving frames to {frames_dir.stem}")):
-            file_path = frames_dir.joinpath(f"{idx:08d}.png")
-            if file_path.exists():
-                file_path = frames_dir.joinpath(f"{idx:08d}(1).png")
-            save_image(frame, file_path)
-    else:
-        for idx, frame in enumerate(frames):
-            file_path = frames_dir.joinpath(f"{idx:08d}.png")
-            if file_path.exists():
-                file_path = frames_dir.joinpath(f"{idx:08d}(1).png")
-            save_image(frame, file_path)
-
-
-
-
 controlnet_address_table={
     "controlnet_tile" : ['lllyasviel/control_v11f1e_sd15_tile'],
     "controlnet_lineart_anime" : ['lllyasviel/control_v11p_sd15s2_lineart_anime'],
