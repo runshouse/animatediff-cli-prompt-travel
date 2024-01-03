@@ -1413,15 +1413,13 @@ def save_frames(video: Tensor, frames_dir: PathLike, **kwargs):
     frames_dir.mkdir(parents=True, exist_ok=True)
     frames = rearrange(video, "b c t h w -> t b c h w")
 
+    # Find the highest existing filename index
+    existing_files = sorted(frames_dir.glob("*.png"), key=lambda f: int(f.stem))
+    highest_index = int(existing_files[-1].stem) if existing_files else -1
+
     for idx, frame in enumerate(tqdm(frames, desc=f"Saving frames to {frames_dir.stem}")):
-        frame_path = frames_dir.joinpath(f"{idx:03d}.png")
-
-        # Increment filename if it already exists
-        counter = 1
-        while frame_path.exists():
-            frame_path = frames_dir.joinpath(f"{idx:03d}({counter}).png")
-            counter += 1
-
+        new_index = highest_index + 1 + idx
+        frame_path = frames_dir.joinpath(f"{new_index:03d}.png")
         save_image(frame, frame_path)
 
         
