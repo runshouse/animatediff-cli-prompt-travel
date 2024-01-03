@@ -1407,6 +1407,7 @@ from torch import Tensor
 from torchvision.utils import save_image
 from tqdm.rich import tqdm
 
+
 def save_frames(video: Tensor, frames_dir: PathLike, **kwargs):
     frames_dir = Path(frames_dir)
     frames_dir.mkdir(parents=True, exist_ok=True)
@@ -1414,11 +1415,13 @@ def save_frames(video: Tensor, frames_dir: PathLike, **kwargs):
 
     for idx, frame in enumerate(tqdm(frames, desc=f"Saving frames to {frames_dir.stem}")):
         frame_path = frames_dir.joinpath(f"{idx:03d}.png")
-        
-        # Check if the file already exists
-        if frame_path.exists():
-            frame_path = frames_dir.joinpath(f"{idx:03d}(1).png")
-        
+
+        # Increment filename if it already exists
+        counter = 1
+        while frame_path.exists():
+            frame_path = frames_dir.joinpath(f"{idx:03d}({counter}).png")
+            counter += 1
+
         save_image(frame, frame_path)
 
         
