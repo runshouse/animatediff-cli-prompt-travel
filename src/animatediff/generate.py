@@ -54,34 +54,22 @@ from animatediff.utils.util import (get_resized_image, get_resized_image2,
                                     save_frames, save_imgs, save_video)
 
 
-from pathlib import Path
-import os
-from tqdm import tqdm
-
-def save_frames(frames, frame_dir, show_progress=True):
-    # Convert to Path object if not already
-    frame_dir = Path(frame_dir)
-    frame_dir.mkdir(parents=True, exist_ok=True)
-
-    # Convert tensor to PIL Image
-    to_pil = transforms.ToPILImage()
-
-    for i, frame in enumerate(tqdm(frames, disable=not show_progress, desc="Saving frames")):
-        base_filename = f"{i:08d}.png"
-        save_path = frame_dir / base_filename
-
-        # Convert tensor to PIL image
-        if isinstance(frame, torch.Tensor):
-            frame = to_pil(frame.cpu().detach())
-
-        # Check if file exists and append a number to it
-        counter = 1
-        while os.path.exists(save_path):
-            base_filename = f"{i:08d}({counter}).png"
-            save_path = frame_dir / base_filename
-            counter += 1
-
-        frame.save(save_path)
+def save_frames(video: Tensor, frames_dir: PathLike, show_progress: bool = True):
+    frames_dir = Path(frames_dir)
+    frames_dir.mkdir(parents=True, exist_ok=True)
+    frames = rearrange(video, "b c t h w -> t b c h w")
+    if show_progress:
+        for idx, frame in enumerate(tqdm(frames, desc=f"Saving frames to {frames_dir.stem}")):
+            file_path = frames_dir.joinpath(f"{idx:08d}.png")
+            if file_path.exists():
+                file_path = frames_dir.joinpath(f"{idx:08d}(1).png")
+            save_image(frame, file_path)
+    else:
+        for idx, frame in enumerate(frames):
+            file_path = frames_dir.joinpath(f"{idx:08d}.png")
+            if file_path.exists():
+                file_path = frames_dir.joinpath(f"{idx:08d}(1).png")
+            save_image(frame, file_path)
 
 
 
