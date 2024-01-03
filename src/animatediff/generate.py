@@ -53,6 +53,7 @@ from animatediff.utils.util import (get_resized_image, get_resized_image2,
                                     prepare_lllite, prepare_motion_module,
                                     save_frames, save_imgs, save_video)
 
+from torch import Tensor
 
 def save_frames(video: Tensor, frames_dir: PathLike, show_progress: bool = True):
     frames_dir = Path(frames_dir)
