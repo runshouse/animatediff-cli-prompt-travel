@@ -1398,6 +1398,29 @@ def wild_card_conversion(model_config: ModelConfig = ...,):
                 if "prompt_fixed_ratio" in c:
                     c["prompt_fixed_ratio"] = max(min(1.0, c["prompt_fixed_ratio"]),0)
 
+
+from os import PathLike
+from pathlib import Path
+from einops import rearrange
+from PIL import Image
+from torch import Tensor
+from torchvision.utils import save_image
+from tqdm.rich import tqdm
+
+def save_frames(video: Tensor, frames_dir: PathLike):
+    frames_dir = Path(frames_dir)
+    frames_dir.mkdir(parents=True, exist_ok=True)
+    frames = rearrange(video, "b c t h w -> t b c h w")
+
+    for idx, frame in enumerate(tqdm(frames, desc=f"Saving frames to {frames_dir.stem}")):
+        frame_path = frames_dir.joinpath(f"{idx:03d}.png")
+
+        # Check if the file already exists
+        if frame_path.exists():
+            frame_path = frames_dir.joinpath(f"{idx:03d}(1).png")
+
+        save_image(frame, frame_path)
+        
 def save_output(
         pipeline_output,
         frame_dir:str,
