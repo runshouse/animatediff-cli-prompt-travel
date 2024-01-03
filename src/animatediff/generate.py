@@ -59,12 +59,20 @@ import os
 from tqdm import tqdm
 
 def save_frames(frames, frame_dir, show_progress=True):
-    frame_dir = Path(frame_dir)  # Convert to Path object if not already
+    # Convert to Path object if not already
+    frame_dir = Path(frame_dir)
     frame_dir.mkdir(parents=True, exist_ok=True)
+
+    # Convert tensor to PIL Image
+    to_pil = transforms.ToPILImage()
 
     for i, frame in enumerate(tqdm(frames, disable=not show_progress, desc="Saving frames")):
         base_filename = f"{i:08d}.png"
         save_path = frame_dir / base_filename
+
+        # Convert tensor to PIL image
+        if isinstance(frame, torch.Tensor):
+            frame = to_pil(frame.cpu().detach())
 
         # Check if file exists and append a number to it
         counter = 1
@@ -74,6 +82,7 @@ def save_frames(frames, frame_dir, show_progress=True):
             counter += 1
 
         frame.save(save_path)
+
 
 
 
